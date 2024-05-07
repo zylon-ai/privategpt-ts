@@ -1,0 +1,1 @@
+export { IngestTextBody } from './IngestTextBody';

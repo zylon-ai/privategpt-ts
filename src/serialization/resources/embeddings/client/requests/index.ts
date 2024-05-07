@@ -1,0 +1,1 @@
+export { EmbeddingsBody } from './EmbeddingsBody';
