@@ -49,6 +49,6 @@ jobs:
       - run: cp README.md ./dist
       - run: ls -la
       - run: cat .npmrc
-      - run: cat $NPM_TOKEN
+      - run: echo $NPM_TOKEN
       - run: pnpm publish dist --access public --no-git-checks
 
