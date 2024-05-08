@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org/'
+          registry-url: 'https://registry.npmjs.org'
       - name: Download dist
         uses: actions/download-artifact@v3
         with:
@@ -45,7 +45,7 @@ jobs:
           path: ./dist
       - run: cp package.json ./dist
       - run: cp README.md ./dist
-      - run: pnpm publish dist --access public --no-git-checks
+      - run: npm publish dist --access public
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 
