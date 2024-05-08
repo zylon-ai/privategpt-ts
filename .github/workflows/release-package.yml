@@ -4,8 +4,6 @@ on:
   release:
     types: [created]
 
-env:
-  NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,8 +45,7 @@ jobs:
           path: ./dist
       - run: cp package.json ./dist
       - run: cp README.md ./dist
-      - run: ls -la
-      - run: cat .npmrc
-      - run: echo $NPM_TOKEN
       - run: pnpm publish dist --access public --no-git-checks
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 
