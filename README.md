@@ -8,7 +8,7 @@ The PrivateGPT TypeScript SDK is a powerful open-source library that allows deve
 npm install privategpt-ts
 ```
 
-## Usage
+## Usage (plain typescript)
 
 ### Initialize client
 
@@ -16,5 +16,296 @@ First you need to initalize the `PrivategptApiClient`:
 ```ts
 const pgptApiClient = new PrivategptApiClient({ environment: 'http://localhost:8001' });
 ```
-Now you can use all the methods to interact with privategpt: ingest file, chat completion, prompt completion, etc
 
+### Ingest file
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+const file = getFileFromSomewhere();
+const ingestResponse = await pgptApiClient.ingestion.ingestFile(file);
+```
+
+### Get ingested files
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+const ingestResponse = await pgptApiClient.ingestion.listIngested();
+```
+
+### Delete ingested file
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+await pgptApiClient.ingestion.deleteIngested(docId);
+```
+
+### Chat completion
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+// stream way
+const stream = await pgptApiClient.completion.chatCompletionStream({
+  messages: [
+    {
+      content: 'How are you',
+      role: 'user'
+    }
+  ],
+  includeSources: true,
+  useContext: true
+});
+const readableStream = streamToReadableStream(stream);
+const reader = readableStream.getReader();
+const decoder = createChunkDecoder();
+const loopRunner = true;
+let result = '';
+
+while (loopRunner) {
+  const { value, done } = await reader.read();
+  if (done) {
+    break;
+  }
+  const decodedChunk = decoder(value);
+  if (!decodedChunk) continue;
+  result += decoder(value);
+  onNewMessage?.(result);
+}
+return result;
+
+// async way
+const openAiCompletionResponse = await pgptApiClient.completion.chatCompletionStream({
+  messages: [
+    {
+      content: 'How are you',
+      role: 'user'
+    }
+  ],
+  includeSources: true,
+  useContext: true
+});
+```
+
+### Prompt completion
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+// stream way
+const stream = await pgptApiClient.completion.promptCompletionStream({
+  promt: 'Hello! Make a joke',
+  includeSources: true,
+  useContext: true
+});
+const readableStream = streamToReadableStream(stream);
+const reader = readableStream.getReader();
+const decoder = createChunkDecoder();
+const loopRunner = true;
+let result = '';
+
+while (loopRunner) {
+  const { value, done } = await reader.read();
+  if (done) {
+    break;
+  }
+  const decodedChunk = decoder(value);
+  if (!decodedChunk) continue;
+  result += decoder(value);
+  onNewMessage?.(result);
+}
+return result;
+
+// async way
+const openAiCompletionResponse = await pgptApiClient.completion.promptCompletion({
+  promt: 'Hello! Make a joke',
+  includeSources: true,
+  useContext: true
+});
+```
+
+
+### Get ingested files
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+const ingestResponse = await pgptApiClient.ingestion.listIngested();
+```
+
+### Delete ingested file
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+await pgptApiClient.ingestion.deleteIngested(docId);
+```
+
+### Chat completion
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+// stream way
+const stream = await pgptApiClient.completion.chatCompletionStream({
+  messages: [
+    {
+      content: 'How are you',
+      role: 'user'
+    }
+  ],
+  includeSources: true,
+  useContext: true
+});
+const readableStream = streamToReadableStream(stream);
+const reader = readableStream.getReader();
+const decoder = createChunkDecoder();
+const loopRunner = true;
+let result = '';
+
+while (loopRunner) {
+  const { value, done } = await reader.read();
+  if (done) {
+    break;
+  }
+  const decodedChunk = decoder(value);
+  if (!decodedChunk) continue;
+  result += decoder(value);
+  onNewMessage?.(result);
+}
+return result;
+
+// async way
+const openAiCompletionResponse = await pgptApiClient.completion.chatCompletionStream({
+  messages: [
+    {
+      content: 'How are you',
+      role: 'user'
+    }
+  ],
+  includeSources: true,
+  useContext: true
+});
+```
+
+### Prompt completion
+
+```ts
+import { pgptApiClient } from 'your/path';
+
+// stream way
+const stream = await pgptApiClient.completion.promptCompletionStream({
+  promt: 'Hello! Make a joke',
+  includeSources: true,
+  useContext: true
+});
+const readableStream = streamToReadableStream(stream);
+const reader = readableStream.getReader();
+const decoder = createChunkDecoder();
+const loopRunner = true;
+let result = '';
+
+while (loopRunner) {
+  const { value, done } = await reader.read();
+  if (done) {
+    break;
+  }
+  const decodedChunk = decoder(value);
+  if (!decodedChunk) continue;
+  result += decoder(value);
+  onNewMessage?.(result);
+}
+return result;
+
+// async way
+const openAiCompletionResponse = await pgptApiClient.completion.promptCompletion({
+  promt: 'Hello! Make a joke',
+  includeSources: true,
+  useContext: true
+});
+```
+
+## Usage (react adapter)
+
+### Initialize client
+
+First you need to initalize the `PrivategptApiClient`:
+```ts
+const pgptApiClient = new PrivategptApiClient({ environment: 'http://localhost:8001' });
+```
+
+### useFiles (ingest file, delete file, get ingested files)
+
+```tsx
+import { pgptApiClient } from 'your/path';
+
+const YourComponent = () => {
+  const {
+    addFile,
+    isUploadingFile,
+    isDeletingFile,
+    files,
+    deleteFile,
+    isFetchingFiles,
+    errorDeletingFile,
+    errorFetchingFiles,
+    errorUploadingFile,
+  } = useFiles({
+    client: pgptApiClient,
+    fetchFiles: true // in case you don't want to fetch files automatically when using this hook
+  });
+}
+```
+
+### useChat (chat completion) 
+
+```tsx
+import { pgptApiClient } from 'your/path';
+
+const YourComponent = () => {
+  const {
+    stop,
+    isLoading,
+    completion,
+    clearCompletion
+  } = useChat({
+    messages: [
+      {
+        content: 'Hello, how are you?',
+        role: 'user'
+      }
+    ],
+    includeSources: true,
+    useContext: true,
+    onFinish: () => {
+      console.log('finished streaming');
+    },
+    client: pgptApiClient,
+  });
+}
+```
+
+### usePrompt (prompt completion) 
+
+```tsx
+import { pgptApiClient } from 'your/path';
+
+const YourComponent = () => {
+  const {
+    stop,
+    isLoading,
+    completion,
+    clearCompletion
+  } = useChat({
+    prompt: 'Hello, make a joke in japanese',
+    includeSources: true,
+    useContext: true,
+    onFinish: () => {
+      console.log('finished streaming');
+    },
+    client: pgptApiClient,
+  });
+}
+```

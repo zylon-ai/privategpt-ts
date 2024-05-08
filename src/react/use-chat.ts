@@ -56,6 +56,7 @@ export const useChat = ({
   return {
     completion,
     isLoading,
+    clearCompletion: () => setCompletion(null),
     stop: () => {
       abortController.current.abort();
     },
