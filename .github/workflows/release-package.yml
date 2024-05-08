@@ -1,4 +1,4 @@
-name: Node.js Package
+name: Release Package 
 
 on:
   release:
@@ -47,5 +47,7 @@ jobs:
           path: ./dist
       - run: cp package.json ./dist
       - run: cp README.md ./dist
+      - run: ls -la
+      - run: cat .npmrc
       - run: pnpm publish dist --access public --no-git-checks
 
