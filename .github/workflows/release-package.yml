@@ -45,7 +45,7 @@ jobs:
           path: ./dist
       - run: cp package.json ./dist
       - run: cp README.md ./dist
-      - run: npm publish dist --access public
+      - run: cd dist && npm publish --access public
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
 
