@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { OpenAiCompletion } from '../../api';
 import { Readable } from 'stream';
 

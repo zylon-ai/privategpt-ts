@@ -1,5 +1,5 @@
 {
-  "name": "privategpt-ts-beta",
+  "name": "privategpt-ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/zylon-ai/privategpt-ts.git"
@@ -14,6 +14,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "qs": "6.11.2",
     "react": "^18.3.1",
     "swr": "^2.2.5",

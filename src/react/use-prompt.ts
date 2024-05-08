@@ -5,7 +5,6 @@ import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
 type UsePromptArgs = {
-  environment: string;
   prompt?: string;
   includeSources?: boolean;
   useContext?: boolean;
@@ -13,7 +12,6 @@ type UsePromptArgs = {
   client: PrivategptApiClient;
 };
 export const usePrompt = ({
-  environment,
   prompt,
   includeSources = false,
   useContext = false,
@@ -23,7 +21,7 @@ export const usePrompt = ({
   const [completion, setCompletion] = useState<string | null>(null);
   const abortController = useRef(new AbortController());
   const queryKey = ['prompt', prompt] as const;
-  const shouldFetch = !!environment && prompt && prompt?.trim() !== '';
+  const shouldFetch = prompt && prompt?.trim() !== '';
   const fetcher = async () => {
     abortController.current = new AbortController();
     if (!prompt) return '';
@@ -49,6 +47,7 @@ export const usePrompt = ({
     return result;
   };
   const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
+    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });

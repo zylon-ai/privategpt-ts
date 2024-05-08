@@ -5,7 +5,6 @@ import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
 type UseChatArgs = {
-  environment: string;
   messages: PrivategptApi.OpenAiMessage[];
   includeSources?: boolean;
   useContext?: boolean;
@@ -13,7 +12,6 @@ type UseChatArgs = {
   client: PrivategptApiClient;
 };
 export const useChat = ({
-  environment,
   messages,
   includeSources = false,
   useContext = false,
@@ -24,7 +22,6 @@ export const useChat = ({
   const abortController = useRef(new AbortController());
   const queryKey = ['chat', messages] as const;
   const shouldFetch =
-    !!environment &&
     messages.length > 0 &&
     messages[messages.length - 1].content?.trim() !== '' &&
     messages[messages.length - 1].role === 'user';
@@ -52,6 +49,7 @@ export const useChat = ({
     return result;
   };
   const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
+    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });

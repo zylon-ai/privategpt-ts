@@ -46,5 +46,6 @@ jobs:
           name: dist 
           path: ./dist
       - run: cp package.json ./dist
+      - run: cp README.md ./dist
       - run: pnpm publish dist --access public --no-git-checks
 
