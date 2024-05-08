@@ -45,5 +45,6 @@ jobs:
         with:
           name: dist 
           path: ./dist
-      - run: pnpm publish --access public --no-git-checks
+      - run: cp package.json ./dist
+      - run: pnpm publish dist --access public --no-git-checks
 

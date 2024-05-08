@@ -4,14 +4,14 @@
     "extendedDiagnostics": true,
     "strict": true,
     "target": "esnext",
-    "module": "CommonJS",
+    "module": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": "src"
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": []
