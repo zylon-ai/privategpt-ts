@@ -83,14 +83,17 @@ export const useChat = ({
     });
     return result;
   };
-  const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
+  const { isLoading, isValidating } = useSWR(
+    queryKey,
+    shouldFetch ? fetcher : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
   return {
     completion,
-    isLoading,
+    isLoading: isLoading || isValidating,
     setCompletion,
     stop: () => {
       abortController.current?.abort();

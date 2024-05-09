@@ -81,7 +81,6 @@ export const usePrompt = ({
     return result;
   };
   const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
-    revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
