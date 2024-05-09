@@ -11,6 +11,7 @@ type UsePromptArgs = {
   onFinish?: (message: string) => void;
   client: PrivategptApiClient;
   enabled?: boolean;
+  systemPrompt?: string;
 };
 export const usePrompt = ({
   prompt,
@@ -18,33 +19,36 @@ export const usePrompt = ({
   useContext = false,
   onFinish,
   client,
+  systemPrompt,
   enabled = true,
 }: UsePromptArgs) => {
   const [completion, setCompletion] = useState<string | null>(null);
-  const abortController = useRef(new AbortController());
+  const abortController = useRef<AbortController | null>(null);
   const queryKey = ['prompt', prompt] as const;
   const shouldFetch = enabled && prompt?.trim() !== '';
   const fetcher = async () => {
     abortController.current = new AbortController();
     if (!prompt) return '';
     setCompletion(null);
-    const result = await getAssistantResponse(
-      client.contextualCompletions.promptCompletionStream.bind(
+    const result = await getAssistantResponse({
+      fn: client.contextualCompletions.promptCompletionStream.bind(
         client.contextualCompletions,
       ),
-      [
+      args: [
         {
           prompt,
           includeSources,
           useContext,
+          systemPrompt,
         },
         {},
         abortController.current.signal,
       ],
-      (message) => {
+      onNewMessage: (message) => {
         setCompletion(message);
       },
-    );
+      abortController: abortController.current,
+    });
     onFinish?.(result);
     return result;
   };
@@ -56,9 +60,12 @@ export const usePrompt = ({
   return {
     completion,
     isLoading,
-    clearCompletion: () => setCompletion(null),
+    setCompletion,
     stop: () => {
-      abortController.current.abort();
+      abortController.current?.abort();
+      abortController.current = null;
+      onFinish?.(completion || '');
+      setCompletion(null);
     },
   };
 };

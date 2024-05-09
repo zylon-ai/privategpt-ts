@@ -11,6 +11,7 @@ type UseChatArgs = {
   onFinish?: (message: string) => void;
   client: PrivategptApiClient;
   enabled?: boolean;
+  systemPrompt?: string;
 };
 export const useChat = ({
   messages,
@@ -19,9 +20,10 @@ export const useChat = ({
   onFinish,
   client,
   enabled = true,
+  systemPrompt,
 }: UseChatArgs) => {
   const [completion, setCompletion] = useState<string | null>(null);
-  const abortController = useRef(new AbortController());
+  const abortController = useRef<AbortController | null>(null);
   const queryKey = ['chat', messages] as const;
   const shouldFetch =
     enabled &&
@@ -30,23 +32,26 @@ export const useChat = ({
     messages[messages.length - 1].role === 'user';
   const fetcher = async () => {
     abortController.current = new AbortController();
-    const result = await getAssistantResponse(
-      client.contextualCompletions.chatCompletionStream.bind(
+    const result = await getAssistantResponse({
+      fn: client.contextualCompletions.chatCompletionStream.bind(
         client.contextualCompletions,
       ),
-      [
+      args: [
         {
-          messages: queryKey[1],
+          messages: systemPrompt
+            ? [{ content: systemPrompt, role: 'system' }, ...messages]
+            : messages,
           includeSources,
           useContext,
         },
         {},
         abortController.current.signal,
       ],
-      (message) => {
+      onNewMessage: (message) => {
         setCompletion(message);
       },
-    );
+      abortController: abortController.current,
+    });
     setCompletion(null);
     onFinish?.(result);
     return result;
@@ -59,9 +64,12 @@ export const useChat = ({
   return {
     completion,
     isLoading,
-    clearCompletion: () => setCompletion(null),
+    setCompletion,
     stop: () => {
-      abortController.current.abort();
+      abortController.current?.abort();
+      abortController.current = null;
+      onFinish?.(completion || '');
+      setCompletion(null);
     },
   };
 };

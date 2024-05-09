@@ -13,11 +13,17 @@ type GetAssistantResponse<T extends any[], R> = (...args: T) => R;
 export async function getAssistantResponse<
   T extends any[],
   R extends Promise<Stream<any>>,
->(
-  fn: GetAssistantResponse<T, R>,
-  args: T,
-  onNewMessage?: (message: string) => void,
-): Promise<string> {
+>({
+  fn,
+  args,
+  onNewMessage,
+  abortController,
+}: {
+  fn: GetAssistantResponse<T, R>;
+  args: T;
+  onNewMessage?: (message: string) => void;
+  abortController?: AbortController;
+}): Promise<string> {
   const stream = await fn(...args);
   const readableStream = streamToReadableStream(stream);
   const reader = readableStream.getReader();
@@ -34,6 +40,10 @@ export async function getAssistantResponse<
     if (!decodedChunk) continue;
     result += decoder(value);
     onNewMessage?.(result);
+    if (abortController === null) {
+      reader.cancel();
+      break;
+    }
   }
   return result;
 }
