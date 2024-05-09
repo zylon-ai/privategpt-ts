@@ -273,7 +273,7 @@ const YourComponent = () => {
     stop,
     isLoading,
     completion,
-    clearCompletion
+    setCompletion
   } = useChat({
     messages: [
       {
@@ -287,6 +287,7 @@ const YourComponent = () => {
       console.log('finished streaming');
     },
     client: pgptApiClient,
+    systemPrompt: 'You are a character from Battlestar Galactica'
   });
 }
 ```
@@ -301,7 +302,7 @@ const YourComponent = () => {
     stop,
     isLoading,
     completion,
-    clearCompletion
+    setCompletion
   } = useChat({
     prompt: 'Hello, make a joke in japanese',
     includeSources: true,
@@ -310,6 +311,7 @@ const YourComponent = () => {
       console.log('finished streaming');
     },
     client: pgptApiClient,
+    systemPrompt: 'You are a japanese chef'
   });
 }
 ```
