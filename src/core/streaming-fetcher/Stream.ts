@@ -18,20 +18,18 @@ export class StreamingTextResponse extends Response {
 
 async function* streamable(
   stream: AsyncIterable<OpenAiCompletion>,
-): AsyncGenerator<string> {
+): AsyncGenerator<OpenAiCompletion> {
   for await (let chunk of stream) {
-    if (chunk && chunk.choices && chunk.choices[0]) {
-      yield chunk.choices[0].delta?.content!;
-    }
+    yield chunk;
   }
 }
 
-function createTransformer(): TransformStream<string> {
+function createTransformer(): TransformStream<OpenAiCompletion> {
   const textEncoder = new TextEncoder();
 
   return new TransformStream({
     async transform(message, controller): Promise<void> {
-      controller.enqueue(textEncoder.encode(message));
+      controller.enqueue(textEncoder.encode(JSON.stringify(message)));
     },
   });
 }

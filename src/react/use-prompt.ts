@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 
+import { Chunk } from '../api';
 import { PrivategptApiClient } from '..';
 import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
@@ -8,7 +9,13 @@ type UsePromptArgs = {
   prompt: string;
   includeSources?: boolean;
   useContext?: boolean;
-  onFinish?: (message: string) => void;
+  onFinish?: ({
+    completion,
+    sources,
+  }: {
+    completion: string;
+    sources: Chunk[];
+  }) => void;
   client: PrivategptApiClient;
   enabled?: boolean;
   systemPrompt?: string;
@@ -22,14 +29,16 @@ export const usePrompt = ({
   systemPrompt,
   enabled = true,
 }: UsePromptArgs) => {
-  const [completion, setCompletion] = useState<string | null>(null);
+  const [completion, setCompletion] = useState<string>('');
   const abortController = useRef<AbortController | null>(null);
   const queryKey = ['prompt', prompt] as const;
   const shouldFetch = enabled && prompt?.trim() !== '';
+
   const fetcher = async () => {
     abortController.current = new AbortController();
     if (!prompt) return '';
-    setCompletion(null);
+    let sources: Chunk[] = [];
+    setCompletion('');
     const result = await getAssistantResponse({
       fn: client.contextualCompletions.promptCompletionStream.bind(
         client.contextualCompletions,
@@ -44,12 +53,31 @@ export const usePrompt = ({
         {},
         abortController.current.signal,
       ],
-      onNewMessage: (message) => {
-        setCompletion(message);
+      onNewMessage: (openAiCompletion) => {
+        const message = openAiCompletion.choices?.[0]?.delta?.content || '';
+        const chunks =
+          openAiCompletion.choices?.[0]?.sources?.reduce((acc, chunk) => {
+            const chunkInAcc = acc.find(
+              (c) =>
+                c.document?.docMetadata?.file_name ===
+                chunk.document?.docMetadata?.file_name,
+            );
+            if (chunk && !chunkInAcc) {
+              acc.push(chunk);
+            }
+            return acc;
+          }, [] as Chunk[]) ?? [];
+        if (chunks.length > 0 && sources.length === 0) {
+          sources = chunks;
+        }
+        setCompletion((prev) => prev + message);
       },
       abortController: abortController.current,
     });
-    onFinish?.(result);
+    onFinish?.({
+      completion: result,
+      sources,
+    });
     return result;
   };
   const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
@@ -64,8 +92,11 @@ export const usePrompt = ({
     stop: () => {
       abortController.current?.abort();
       abortController.current = null;
-      onFinish?.(completion || '');
-      setCompletion(null);
+      onFinish?.({
+        completion: completion || '',
+        sources: [],
+      });
+      setCompletion('');
     },
   };
 };

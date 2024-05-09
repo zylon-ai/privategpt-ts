@@ -1,5 +1,7 @@
 import { Stream, streamToReadableStream } from '..';
 
+import { OpenAiCompletion } from '../api';
+
 function createChunkDecoder() {
   const decoder = new TextDecoder();
 
@@ -21,7 +23,7 @@ export async function getAssistantResponse<
 }: {
   fn: GetAssistantResponse<T, R>;
   args: T;
-  onNewMessage?: (message: string) => void;
+  onNewMessage?: (completion: OpenAiCompletion) => void;
   abortController?: AbortController;
 }): Promise<string> {
   const stream = await fn(...args);
@@ -38,8 +40,11 @@ export async function getAssistantResponse<
     }
     const decodedChunk = decoder(value);
     if (!decodedChunk) continue;
-    result += decoder(value);
-    onNewMessage?.(result);
+    const completion = JSON.parse(decodedChunk) as OpenAiCompletion;
+    if (completion.choices && completion.choices[0]) {
+      result += completion.choices[0].delta?.content;
+    }
+    onNewMessage?.(completion);
     if (abortController === null) {
       reader.cancel();
       break;

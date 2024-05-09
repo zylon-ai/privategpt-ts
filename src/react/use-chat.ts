@@ -1,6 +1,7 @@
 import { PrivategptApi, PrivategptApiClient } from '..';
 import { useRef, useState } from 'react';
 
+import { Chunk } from '../api';
 import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
@@ -8,7 +9,13 @@ type UseChatArgs = {
   messages: PrivategptApi.OpenAiMessage[];
   includeSources?: boolean;
   useContext?: boolean;
-  onFinish?: (message: string) => void;
+  onFinish?: ({
+    completion,
+    sources,
+  }: {
+    completion: string;
+    sources: Chunk[];
+  }) => void;
   client: PrivategptApiClient;
   enabled?: boolean;
   systemPrompt?: string;
@@ -22,7 +29,7 @@ export const useChat = ({
   enabled = true,
   systemPrompt,
 }: UseChatArgs) => {
-  const [completion, setCompletion] = useState<string | null>(null);
+  const [completion, setCompletion] = useState<string>('');
   const abortController = useRef<AbortController | null>(null);
   const queryKey = ['chat', messages] as const;
   const shouldFetch =
@@ -32,6 +39,7 @@ export const useChat = ({
     messages[messages.length - 1].role === 'user';
   const fetcher = async () => {
     abortController.current = new AbortController();
+    let sources: Chunk[] = [];
     const result = await getAssistantResponse({
       fn: client.contextualCompletions.chatCompletionStream.bind(
         client.contextualCompletions,
@@ -47,13 +55,32 @@ export const useChat = ({
         {},
         abortController.current.signal,
       ],
-      onNewMessage: (message) => {
-        setCompletion(message);
+      onNewMessage: (openAiCompletion) => {
+        const message = openAiCompletion.choices?.[0]?.delta?.content || '';
+        const chunks =
+          openAiCompletion.choices?.[0]?.sources?.reduce((acc, chunk) => {
+            const chunkInAcc = acc.find(
+              (c) =>
+                c.document?.docMetadata?.file_name ===
+                chunk.document?.docMetadata?.file_name,
+            );
+            if (chunk && !chunkInAcc) {
+              acc.push(chunk);
+            }
+            return acc;
+          }, [] as Chunk[]) ?? [];
+        if (chunks.length > 0 && sources.length === 0) {
+          sources = chunks;
+        }
+        setCompletion((prev) => prev + message);
       },
       abortController: abortController.current,
     });
-    setCompletion(null);
-    onFinish?.(result);
+    setCompletion('');
+    onFinish?.({
+      completion: result,
+      sources,
+    });
     return result;
   };
   const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
@@ -68,8 +95,11 @@ export const useChat = ({
     stop: () => {
       abortController.current?.abort();
       abortController.current = null;
-      onFinish?.(completion || '');
-      setCompletion(null);
+      onFinish?.({
+        completion: completion || '',
+        sources: [],
+      });
+      setCompletion('');
     },
   };
 };
