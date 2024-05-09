@@ -10,6 +10,7 @@ type UseChatArgs = {
   useContext?: boolean;
   onFinish?: (message: string) => void;
   client: PrivategptApiClient;
+  enabled?: boolean;
 };
 export const useChat = ({
   messages,
@@ -17,11 +18,13 @@ export const useChat = ({
   useContext = false,
   onFinish,
   client,
+  enabled = true,
 }: UseChatArgs) => {
   const [completion, setCompletion] = useState<string | null>(null);
   const abortController = useRef(new AbortController());
   const queryKey = ['chat', messages] as const;
   const shouldFetch =
+    enabled &&
     messages.length > 0 &&
     messages[messages.length - 1].content?.trim() !== '' &&
     messages[messages.length - 1].role === 'user';

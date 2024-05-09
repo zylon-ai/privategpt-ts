@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/zylon-ai/privategpt-ts.git"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "main": "./index.js",
   "types": "./index.d.ts",

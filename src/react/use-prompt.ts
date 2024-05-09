@@ -5,11 +5,12 @@ import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
 type UsePromptArgs = {
-  prompt?: string;
+  prompt: string;
   includeSources?: boolean;
   useContext?: boolean;
   onFinish?: (message: string) => void;
   client: PrivategptApiClient;
+  enabled?: boolean;
 };
 export const usePrompt = ({
   prompt,
@@ -17,11 +18,12 @@ export const usePrompt = ({
   useContext = false,
   onFinish,
   client,
+  enabled = true,
 }: UsePromptArgs) => {
   const [completion, setCompletion] = useState<string | null>(null);
   const abortController = useRef(new AbortController());
   const queryKey = ['prompt', prompt] as const;
-  const shouldFetch = prompt && prompt?.trim() !== '';
+  const shouldFetch = enabled && prompt?.trim() !== '';
   const fetcher = async () => {
     abortController.current = new AbortController();
     if (!prompt) return '';
