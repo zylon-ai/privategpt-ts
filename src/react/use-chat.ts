@@ -1,12 +1,12 @@
-import { PrivategptApi, PrivategptApiClient } from '..';
+import { Chunk, ContextFilter, OpenAiMessage } from '../api';
 import { useRef, useState } from 'react';
 
-import { Chunk } from '../api';
+import { PrivategptApiClient } from '..';
 import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
 type UseChatArgs = {
-  messages: PrivategptApi.OpenAiMessage[];
+  messages: OpenAiMessage[];
   includeSources?: boolean;
   useContext?: boolean;
   onFinish?: ({
@@ -19,6 +19,7 @@ type UseChatArgs = {
   client: PrivategptApiClient;
   enabled?: boolean;
   systemPrompt?: string;
+  contextFilter?: ContextFilter;
 };
 export const useChat = ({
   messages,
@@ -28,6 +29,7 @@ export const useChat = ({
   client,
   enabled = true,
   systemPrompt,
+  contextFilter,
 }: UseChatArgs) => {
   const [completion, setCompletion] = useState<string>('');
   const abortController = useRef<AbortController | null>(null);
@@ -51,6 +53,7 @@ export const useChat = ({
             : messages,
           includeSources,
           useContext,
+          contextFilter,
         },
         {},
         abortController.current.signal,

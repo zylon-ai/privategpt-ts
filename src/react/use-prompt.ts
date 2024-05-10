@@ -1,6 +1,6 @@
+import { Chunk, ContextFilter } from '../api';
 import { useRef, useState } from 'react';
 
-import { Chunk } from '../api';
 import { PrivategptApiClient } from '..';
 import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
@@ -19,6 +19,7 @@ type UsePromptArgs = {
   client: PrivategptApiClient;
   enabled?: boolean;
   systemPrompt?: string;
+  contextFilter?: ContextFilter;
 };
 export const usePrompt = ({
   prompt,
@@ -28,6 +29,7 @@ export const usePrompt = ({
   client,
   systemPrompt,
   enabled = true,
+  contextFilter,
 }: UsePromptArgs) => {
   const [completion, setCompletion] = useState<string>('');
   const abortController = useRef<AbortController | null>(null);
@@ -49,6 +51,7 @@ export const usePrompt = ({
           includeSources,
           useContext,
           systemPrompt,
+          contextFilter,
         },
         {},
         abortController.current.signal,
