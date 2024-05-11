@@ -1,4 +1,9 @@
 {
+  "references": [
+    {
+      "path": "./packages/shared"
+    }
+  ],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "extendedDiagnostics": true,
@@ -9,10 +14,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
-    "outDir": "dist",
-    "rootDir": "src",
     "allowJs": true
-  },
-  "include": ["src"],
-  "exclude": []
+  }
 }

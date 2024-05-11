@@ -1,6 +1,6 @@
-import { Stream, streamToReadableStream } from '..';
+import { PrivategptApi, Stream } from 'shared';
 
-import { OpenAiCompletion } from '../api';
+import { streamToReadableStream } from '../utils-stream';
 
 function createChunkDecoder() {
   const decoder = new TextDecoder();
@@ -23,7 +23,7 @@ export async function getAssistantResponse<
 }: {
   fn: GetAssistantResponse<T, R>;
   args: T;
-  onNewMessage?: (completion: OpenAiCompletion) => void;
+  onNewMessage?: (completion: PrivategptApi.OpenAiCompletion) => void;
   abortController?: AbortController;
 }): Promise<string> {
   const stream = await fn(...args);
@@ -40,7 +40,9 @@ export async function getAssistantResponse<
     }
     const decodedChunk = decoder(value);
     if (!decodedChunk) continue;
-    const completion = JSON.parse(decodedChunk) as OpenAiCompletion;
+    const completion = JSON.parse(
+      decodedChunk,
+    ) as PrivategptApi.OpenAiCompletion;
     if (completion.choices && completion.choices[0]) {
       result += completion.choices[0].delta?.content;
     }

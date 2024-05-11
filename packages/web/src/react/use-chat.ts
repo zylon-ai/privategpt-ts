@@ -1,12 +1,11 @@
-import { Chunk, ContextFilter } from '../api';
+import { PrivategptApi, PrivategptApiClient } from 'shared';
 import { useRef, useState } from 'react';
 
-import { PrivategptApiClient } from '..';
 import { getAssistantResponse } from './utils';
 import useSWR from 'swr';
 
-type UsePromptArgs = {
-  prompt: string;
+type UseChatArgs = {
+  messages: PrivategptApi.OpenAiMessage[];
   includeSources?: boolean;
   useContext?: boolean;
   onFinish?: ({
@@ -14,43 +13,45 @@ type UsePromptArgs = {
     sources,
   }: {
     completion: string;
-    sources: Chunk[];
+    sources: PrivategptApi.Chunk[];
   }) => void;
   client: PrivategptApiClient;
   enabled?: boolean;
   systemPrompt?: string;
-  contextFilter?: ContextFilter;
+  contextFilter?: PrivategptApi.ContextFilter;
 };
-export const usePrompt = ({
-  prompt,
+export const useChat = ({
+  messages,
   includeSources = false,
   useContext = false,
   onFinish,
   client,
-  systemPrompt,
   enabled = true,
+  systemPrompt,
   contextFilter,
-}: UsePromptArgs) => {
+}: UseChatArgs) => {
   const [completion, setCompletion] = useState<string>('');
   const abortController = useRef<AbortController | null>(null);
-  const queryKey = ['prompt', prompt] as const;
-  const shouldFetch = enabled && prompt?.trim() !== '';
-
+  const queryKey = ['chat', messages] as const;
+  const shouldFetch =
+    enabled &&
+    messages.length > 0 &&
+    messages[messages.length - 1].content?.trim() !== '' &&
+    messages[messages.length - 1].role === 'user';
   const fetcher = async () => {
     abortController.current = new AbortController();
-    if (!prompt) return '';
-    let sources: Chunk[] = [];
-    setCompletion('');
+    let sources: PrivategptApi.Chunk[] = [];
     const result = await getAssistantResponse({
-      fn: client.contextualCompletions.promptCompletionStream.bind(
+      fn: client.contextualCompletions.chatCompletionStream.bind(
         client.contextualCompletions,
       ),
       args: [
         {
-          prompt,
+          messages: systemPrompt
+            ? [{ content: systemPrompt, role: 'system' }, ...messages]
+            : messages,
           includeSources,
           useContext,
-          systemPrompt,
           contextFilter,
         },
         {},
@@ -69,7 +70,7 @@ export const usePrompt = ({
               acc.push(chunk);
             }
             return acc;
-          }, [] as Chunk[]) ?? [];
+          }, [] as PrivategptApi.Chunk[]) ?? [];
         if (chunks.length > 0 && sources.length === 0) {
           sources = chunks;
         }
@@ -77,19 +78,24 @@ export const usePrompt = ({
       },
       abortController: abortController.current,
     });
+    setCompletion('');
     onFinish?.({
       completion: result,
       sources,
     });
     return result;
   };
-  const { isLoading } = useSWR(queryKey, shouldFetch ? fetcher : null, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
+  const { isLoading, isValidating } = useSWR(
+    queryKey,
+    shouldFetch ? fetcher : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
+  );
   return {
     completion,
-    isLoading,
+    isLoading: isLoading || isValidating,
     setCompletion,
     stop: () => {
       abortController.current?.abort();

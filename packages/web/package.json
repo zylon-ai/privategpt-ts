@@ -1,5 +1,5 @@
 {
-  "name": "privategpt-ts",
+  "name": "privategpt-web",
   "repository": {
     "type": "git",
     "url": "https://github.com/zylon-ai/privategpt-ts.git"
@@ -11,15 +11,11 @@
   "scripts": {
     "format": "biome format --write ./src",
     "lint": "biome lint ./src",
-    "build": "pnpm build:web && pnpm build:node",
-    "build:web": "pnpm --filter privategpt-web build",
-    "build:node": "pnpm --filter privategpt-node build",
-    "build:shared": "pnpm --filter privategpt-shared build",
-    "cp:package:web": "pnpm --filter privategpt-web cp:package",
-    "cp:package:node": "pnpm --filter privategpt-node cp:package",
-    "cp:package": "pnpm cp:package:web && pnpm cp:package:node"
+    "build": "tsc",
+    "cp:package": "cp package.json dist"
   },
   "dependencies": {
+    "shared": "workspace:*",
     "buffer": "^6.0.3",
     "qs": "6.11.2",
     "react": "^18.3.1",
@@ -34,7 +30,6 @@
     "@types/react": "^18.3.1",
     "@types/readable-stream": "^4.0.12",
     "@types/url-join": "4.0.1",
-    "esbuild": "^0.21.1",
     "typescript": "4.6.4"
   },
   "publishConfig": {
