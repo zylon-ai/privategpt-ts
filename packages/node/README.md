@@ -6,10 +6,16 @@ The PrivateGPT TypeScript SDK is a powerful open-source library that allows deve
 
 [Source demo](https://github.com/frgarciames/privategpt-react)
 
-## Installation
+## Installation web
 
 ```
-npm install privategpt-ts
+npm install privategpt-sdk-web
+```
+
+## Installation node
+
+```
+npm install privategpt-sdk-node
 ```
 
 ## Usage (plain typescript)
