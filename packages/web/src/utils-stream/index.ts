@@ -1,4 +1,4 @@
-import { PrivategptApi, Stream } from 'shared';
+import { PrivategptApi, Stream } from 'privategpt-sdk-utils';
 
 import { Readable } from 'stream';
 
@@ -36,17 +36,22 @@ function createTransformer(): TransformStream<PrivategptApi.OpenAiCompletion> {
 
 function readableFromAsyncIterable<T>(iterable: AsyncIterable<T>) {
   let it = iterable[Symbol.asyncIterator]();
-  return new ReadableStream<T>({
-    async pull(controller) {
-      const { done, value } = await it.next();
-      if (done) controller.close();
-      else controller.enqueue(value);
-    },
+  try {
+    return new ReadableStream<T>({
+      async pull(controller) {
+        const { done, value } = await it.next();
+        if (done) controller.close();
+        else controller.enqueue(value);
+      },
 
-    async cancel(reason) {
-      await it.return?.(reason);
-    },
-  });
+      async cancel(reason) {
+        await it.return?.(reason);
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  return new ReadableStream<T>({});
 }
 
 export const streamToReadableStream = (

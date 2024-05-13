@@ -1,10 +1,10 @@
 {
-  "name": "privategpt-web",
+  "name": "privategpt-sdk-web",
   "repository": {
     "type": "git",
     "url": "https://github.com/zylon-ai/privategpt-ts.git"
   },
-  "version": "0.1.6",
+  "version": "0.1.1",
   "description": "",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -12,14 +12,13 @@
     "format": "biome format --write ./src",
     "lint": "biome lint ./src",
     "build": "tsc",
-    "cp:package": "cp package.json dist"
+    "cp:package": "cp package.json dist && cp README.md dist"
   },
   "dependencies": {
-    "shared": "workspace:*",
+    "privategpt-sdk-utils": "^0.1.1",
     "buffer": "^6.0.3",
     "qs": "6.11.2",
     "react": "^18.3.1",
-    "readable-stream": "^4.5.2",
     "swr": "^2.2.5",
     "url-join": "4.0.1"
   },
@@ -28,7 +27,6 @@
     "@types/node": "17.0.33",
     "@types/qs": "6.9.8",
     "@types/react": "^18.3.1",
-    "@types/readable-stream": "^4.0.12",
     "@types/url-join": "4.0.1",
     "typescript": "4.6.4"
   },

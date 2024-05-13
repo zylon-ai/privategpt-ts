@@ -1,10 +1,10 @@
 {
-  "name": "privategpt-node",
+  "name": "privategpt-sdk-node",
   "repository": {
     "type": "git",
     "url": "https://github.com/zylon-ai/privategpt-ts.git"
   },
-  "version": "0.1.6",
+  "version": "0.1.1",
   "description": "",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -12,7 +12,7 @@
     "format": "biome format --write ./src",
     "lint": "biome lint ./src",
     "build": "tsc --outDir dist --emitDeclarationOnly && esbuild ./src/index.ts --bundle --platform=node --format=cjs --outfile=dist/index.js",
-    "cp:package": "cp package.json dist"
+    "cp:package": "cp package.json dist && cp README.md dist"
   },
   "dependencies": {
     "buffer": "^6.0.3",
@@ -20,13 +20,12 @@
     "url-join": "4.0.1"
   },
   "devDependencies": {
-    "shared": "workspace:*",
+    "privategpt-sdk-utils": "^0.1.1",
     "@biomejs/biome": "1.7.2",
     "@types/node": "17.0.33",
     "@types/qs": "6.9.8",
     "@types/url-join": "4.0.1",
     "esbuild": "^0.21.1",
-    "tsup": "^8.0.2",
     "typescript": "4.6.4"
   },
   "publishConfig": {

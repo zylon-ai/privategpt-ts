@@ -1,4 +1,5 @@
-import { PrivategptApi, Stream } from 'shared';
+import { PrivategptApi, Stream } from 'privategpt-sdk-utils';
+import { ReadableStream, TransformStream } from 'stream/web';
 
 import { Readable } from 'stream';
 

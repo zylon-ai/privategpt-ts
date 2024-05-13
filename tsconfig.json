@@ -1,9 +1,4 @@
 {
-  "references": [
-    {
-      "path": "./packages/shared"
-    }
-  ],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "extendedDiagnostics": true,

@@ -1,9 +1,9 @@
-export * as PrivategptApi from 'shared';
 export {
   PrivategptApiClient,
   PrivategptApiError,
   PrivategptApiTimeoutError,
-} from 'shared';
+  PrivategptApi,
+} from 'privategpt-sdk-utils';
 export {
   StreamingTextResponse,
   streamToReadableStream,

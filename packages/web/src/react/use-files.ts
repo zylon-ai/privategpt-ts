@@ -1,4 +1,4 @@
-import { PrivategptApi, PrivategptApiClient } from 'shared';
+import { PrivategptApi, PrivategptApiClient } from 'privategpt-sdk-utils';
 
 import useSWR from 'swr';
 import useSWRMutation from 'swr/mutation';
