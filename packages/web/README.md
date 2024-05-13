@@ -4,7 +4,7 @@ The PrivateGPT TypeScript SDK is a powerful open-source library that allows deve
 
 [Live demo](https://privategpt-react.vercel.app/)
 
-[Source demo](https://github.com/frgarciames/privategpt-react)
+[Live demo source code](https://github.com/frgarciames/privategpt-react)
 
 ## Installation web
 

@@ -2,9 +2,7 @@
 
 The PrivateGPT TypeScript SDK is a powerful open-source library that allows developers to work with AI in a private and secure manner. This SDK provides a set of tools and utilities to interact with the PrivateGPT API and leverage its capabilities.
 
-[Live demo](https://privategpt-react.vercel.app/)
-
-[Source demo](https://github.com/frgarciames/privategpt-react)
+[Node.js demo](https://github.com/frgarciames/privategpt-nodejs)
 
 ## Installation web
 
