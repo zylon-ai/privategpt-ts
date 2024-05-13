@@ -20,7 +20,7 @@ npm install privategpt-sdk-web
 npm install privategpt-sdk-node
 ```
 
-## Usage (plain typescript)
+## Usage (js or ts)
 
 ### Initialize client
 
