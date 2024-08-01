@@ -13,5 +13,6 @@ export * from './OpenAiCompletion';
 export * from './OpenAiDelta';
 export * from './OpenAiMessageRole';
 export * from './OpenAiMessage';
+export * from './SummarizeResponse';
 export * from './ValidationErrorLocItem';
 export * from './ValidationError';
