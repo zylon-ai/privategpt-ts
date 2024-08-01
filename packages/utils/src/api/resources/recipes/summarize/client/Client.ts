@@ -161,7 +161,7 @@ export class Summarize {
         'X-Fern-Language': 'JavaScript',
       },
       contentType: 'application/json',
-      body: await serializers.ChatBody.jsonOrThrow(request, {
+      body: await serializers.SummarizeBody.jsonOrThrow(request, {
         unrecognizedObjectKeys: 'strip',
       }),
       timeoutMs:
