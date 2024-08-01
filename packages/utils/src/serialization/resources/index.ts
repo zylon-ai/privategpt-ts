@@ -7,3 +7,4 @@ export * from './contextChunks/client/requests';
 export * as ingestion from './ingestion';
 export * from './ingestion/client/requests';
 export * from './embeddings/client/requests';
+export * from './summarize';

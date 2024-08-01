@@ -3,11 +3,13 @@
  */
 
 import * as core from './core';
-import { ContextualCompletions } from './api/resources/contextualCompletions/client/Client';
+
 import { ContextChunks } from './api/resources/contextChunks/client/Client';
-import { Ingestion } from './api/resources/ingestion/client/Client';
+import { ContextualCompletions } from './api/resources/contextualCompletions/client/Client';
 import { Embeddings } from './api/resources/embeddings/client/Client';
 import { Health } from './api/resources/health/client/Client';
+import { Ingestion } from './api/resources/ingestion/client/Client';
+import { Recipes } from './api/resources/recipes/Client';
 
 export declare namespace PrivategptApiClient {
   interface Options {
@@ -21,7 +23,7 @@ export declare namespace PrivategptApiClient {
 }
 
 export class PrivategptApiClient {
-  constructor(protected readonly _options: PrivategptApiClient.Options) {}
+  constructor(protected readonly _options: PrivategptApiClient.Options) { }
 
   protected _contextualCompletions: ContextualCompletions | undefined;
 
@@ -47,6 +49,12 @@ export class PrivategptApiClient {
 
   public get embeddings(): Embeddings {
     return (this._embeddings ??= new Embeddings(this._options));
+  }
+
+  protected _recipes: Recipes | undefined;
+
+  public get recipes(): Recipes {
+    return (this._recipes ??= new Recipes(this._options));
   }
 
   protected _health: Health | undefined;

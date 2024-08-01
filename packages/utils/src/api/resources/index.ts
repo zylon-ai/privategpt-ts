@@ -8,3 +8,4 @@ export * from './contextualCompletions/client/requests';
 export * from './contextChunks/client/requests';
 export * from './ingestion/client/requests';
 export * from './embeddings/client/requests';
+export * from './recipes';
